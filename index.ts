@@ -21,7 +21,7 @@ export class GatewayLambdaDynoStack extends cdk.Stack {
 
         const addProductLambda = new lambda.Function(this, 'addProduct', {
             code: new lambda.AssetCode('src'),
-            handler: 'create.handler',
+            handler: 'create-product.handler',
             runtime: lambda.Runtime.NODEJS_10_X,
             environment: {
                 TABLE_NAME: dynoTable.tableName,
@@ -50,6 +50,8 @@ export class GatewayLambdaDynoStack extends cdk.Stack {
         });
 
         dynoTable.grantReadWriteData(addProductLambda);
+        dynoTable.grantReadWriteData(getProductLambda);
+        dynoTable.grantReadWriteData(deleteProductLambda);
 
         const gateway = new apigateway.RestApi(this, 'productsAPI', {
             restApiName: 'Products API'
@@ -58,6 +60,7 @@ export class GatewayLambdaDynoStack extends cdk.Stack {
         const productsAPI = gateway.root.addResource('products')
         const addProductIntegration = new LambdaIntegration(addProductLambda);
         productsAPI.addMethod('POST', addProductIntegration);
+        addCorsOptions(productsAPI);
 
         const specificProductAPI = productsAPI.addResource('{id}');
         const getProductIntegration = new LambdaIntegration(getProductLambda);
@@ -65,11 +68,40 @@ export class GatewayLambdaDynoStack extends cdk.Stack {
 
         const deleteProductIntegration = new LambdaIntegration(deleteProductLambda);
         specificProductAPI.addMethod('DELETE', deleteProductIntegration);
-
+        addCorsOptions(specificProductAPI);
 
     }
+
+}
+
+export function addCorsOptions(apiResource: apigateway.IResource) {
+    apiResource.addMethod('OPTIONS', new apigateway.MockIntegration({
+        integrationResponses: [{
+            statusCode: '200',
+            responseParameters: {
+                'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                'method.response.header.Access-Control-Allow-Origin': "'*'",
+                'method.response.header.Access-Control-Allow-Credentials': "'false'",
+                'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET,PUT,POST,DELETE'",
+            },
+        }],
+        passthroughBehavior: apigateway.PassthroughBehavior.NEVER,
+        requestTemplates: {
+            "application/json": "{\"statusCode\": 200}"
+        },
+    }), {
+        methodResponses: [{
+            statusCode: '200',
+            responseParameters: {
+                'method.response.header.Access-Control-Allow-Headers': true,
+                'method.response.header.Access-Control-Allow-Methods': true,
+                'method.response.header.Access-Control-Allow-Credentials': true,
+                'method.response.header.Access-Control-Allow-Origin': true,
+            },
+        }]
+    })
 }
 
 const app = new cdk.App;
-new GatewayLambdaDynoStack(app, 'Basic product store');
+new GatewayLambdaDynoStack(app, 'BasicProductStore');
 app.synth;
