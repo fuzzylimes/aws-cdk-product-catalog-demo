@@ -4,7 +4,7 @@ import dynamodb = require('@aws-cdk/aws-dynamodb');
 import lambda = require('@aws-cdk/aws-lambda');
 import cdk = require('@aws-cdk/core');
 
-const partitionKey: string = 'productId';
+const partitionKey: string = 'id';
 
 export class GatewayLambdaDynoStack extends cdk.Stack {
     constructor(app: cdk.App, id: string) {

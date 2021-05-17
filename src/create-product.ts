@@ -1,19 +1,26 @@
 import AWS from 'aws-sdk';
 const db = new AWS.DynamoDB.DocumentClient();
 import { v4 as uuidv4 } from 'uuid';
+import { isProductRequest, validate } from './domain/product';
 const TABLE_NAME = process.env["TABLE_NAME"] || '';
-const PRIMARY_KEY = process.env["PRIMARY_KEY"] || '';
 
 const RESERVED_RESPONSE = `Error: You're using AWS reserved keywords as attributes`,
-    DYNAMODB_EXECUTION_ERROR = `Error: Execution update, caused a Dynamodb error, please take a look at your CloudWatch Logs.`;
+    DYNAMODB_EXECUTION_ERROR = `Error: Execution update, caused a Dynamodb error, please take a look at your CloudWatch Logs.`,
+    INVALID_MESSAGE_BODY = { statusCode: 400, body: JSON.stringify({ message: 'invalid message body' }) }
 
 export const handler = async (event: any = {}): Promise<any> => {
 
     if (!event.body) {
-        return { statusCode: 400, body: 'invalid request, you are missing the parameter body' };
+        return { statusCode: 400, body: JSON.stringify({message: 'missing body'})};
     }
-    const item = typeof event.body == 'object' ? event.body : JSON.parse(event.body);
-    item[PRIMARY_KEY] = uuidv4();
+    if (typeof event.body != 'object') {
+        return INVALID_MESSAGE_BODY;
+    }
+    const item = JSON.parse(event.body);
+    if (!isProductRequest(item) || !validate(item)) {
+        return INVALID_MESSAGE_BODY;
+    }
+    item['id'] = uuidv4();
     const params = {
         TableName: TABLE_NAME,
         Item: item

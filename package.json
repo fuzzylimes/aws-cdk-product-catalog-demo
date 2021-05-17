@@ -6,6 +6,8 @@
   "scripts": {
     "tsc": "tsc",
     "build": "tsc",
+    "deploy": "cdk deploy",
+    "destroy": "cdk destroy",
     "watch": "tsc -w",
     "cdk": "cdk"
   },
