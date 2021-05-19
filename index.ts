@@ -19,7 +19,7 @@ const partitionKey: string = 'id';
 // resources, as well as the addition of new resources, without requiring a full re-deployment
 // of the stack.
 
-export class GatewayLambdaDynoStack extends cdk.Stack {
+export class ProductStoreStack extends cdk.Stack {
     constructor(app: cdk.App, id: string) {
         super(app, id)
 
@@ -160,6 +160,6 @@ export function addCorsOptions(apiResource: apigateway.IResource) {
 }
 
 const app = new cdk.App;
-new GatewayLambdaDynoStack(app, 'BasicProductStore');
+new ProductStoreStack(app, 'BasicProductStore');
 // generates the cloudformation template and all assets needed
 app.synth;

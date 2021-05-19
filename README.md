@@ -3,14 +3,14 @@ Project explores how one could go about creating a simple product catalog using 
 full stack includes:
 
 * CDK - handles component orchestration
-* API Gatway - makes our lambda functions accessible
+* API Gateway - makes our lambda functions accessible
 * Lambda - runs our bite-sized rest controllers and interfaces with DB
 * DynamoDB - stores our product data
 
 ## How to Run
 1. Ensure you've completed the steps mentioned in the `SETUP` section below.
 2. Ensure you have cdk installed globally: `npm i -g aws-cdk`
-3. Run `npm install`
+3. Run `npm ci` to install dev dependencies
 4. Run `npm build` to compile ts and download lambda dependencies
 5. Run `cdk diff` to check what will be deployed
 6. Run `cdk deploy` and verify the changes to start deployment

@@ -1,7 +1,7 @@
 {
   "name": "gw-labda-dyno",
   "version": "1.0.0",
-  "description": "Creates a simple crd app using AWS CDK, API Gatway, Lambda, and DynamoDB",
+  "description": "Creates a simple crd app using AWS CDK, API Gateway, Lambda, and DynamoDB",
   "main": "index.js",
   "scripts": {
     "tsc": "tsc",
