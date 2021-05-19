@@ -4,34 +4,29 @@ import { v4 as uuidv4 } from 'uuid';
 import { isProductRequest, validate } from './domain/product';
 const TABLE_NAME = process.env["TABLE_NAME"] || '';
 
-const RESERVED_RESPONSE = `Error: You're using AWS reserved keywords as attributes`,
-    DYNAMODB_EXECUTION_ERROR = `Error: Execution update, caused a Dynamodb error, please take a look at your CloudWatch Logs.`,
-    INVALID_MESSAGE_BODY = { statusCode: 400, body: JSON.stringify({ message: 'invalid message body' }) }
-
 export const handler = async (event: any = {}): Promise<any> => {
 
+    // Check that body has a payload object, abort if not present
     if (!event.body) {
         return { statusCode: 400, body: JSON.stringify({message: 'missing body'})};
     }
-    if (typeof event.body != 'object') {
-        return INVALID_MESSAGE_BODY;
+    const product = typeof event.body == 'object' ? event.body : JSON.parse(event.body);
+    if (!isProductRequest(product)||!validate(product)) {
+        return { statusCode: 400, body: JSON.stringify({ message: 'invalid message body' }) }
     }
-    const item = JSON.parse(event.body);
-    if (!isProductRequest(item) || !validate(item)) {
-        return INVALID_MESSAGE_BODY;
-    }
-    item['id'] = uuidv4();
+    // Generate a UUID for our primary key in dynamoDB
+    product['id'] = uuidv4();
     const params = {
         TableName: TABLE_NAME,
-        Item: item
+        Item: product
     };
 
     try {
-        const res = await db.put(params).promise()
-        return { statusCode: 201, body: JSON.stringify(res.$response) }
+        // Attempt to write item to DB, and return object if successful
+        await db.put(params).promise()
+        return { statusCode: 201, body: JSON.stringify(product) }
     } catch (dbError) {
-        const errorResponse = dbError.code === 'ValidationException' && dbError.message.includes('reserved keyword') ?
-            DYNAMODB_EXECUTION_ERROR : RESERVED_RESPONSE;
-        return { statusCode: 500, body: errorResponse };
+        // No response message for public API, user should check logs
+        return { statusCode: 500 };
     }
 };

@@ -5,9 +5,9 @@ const PRIMARY_KEY = process.env["PRIMARY_KEY"] || '';
 
 export const handler = async (event: any = {}): Promise<any> => {
 
-    const requestedItemId = event.pathParameters.id;
+    const requestedItemId = event.pathParameters.productId;
     if (!requestedItemId) {
-        return { statusCode: 400, body: `Error: You are missing the path parameter id` };
+        return { statusCode: 400, body: JSON.stringify({ message: "null productId in path" }) };
     }
 
     const params = {
@@ -19,7 +19,11 @@ export const handler = async (event: any = {}): Promise<any> => {
 
     try {
         const response = await db.get(params).promise();
-        return { statusCode: 200, body: JSON.stringify(response.Item) };
+        if (response.Item) {
+            return { statusCode: 200, body: JSON.stringify(response.Item) };
+        } else {
+            return { statusCode: 404}
+        }
     } catch (dbError) {
         return { statusCode: 500, body: JSON.stringify(dbError) };
     }

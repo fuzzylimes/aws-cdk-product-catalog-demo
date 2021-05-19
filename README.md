@@ -2,6 +2,9 @@
 * Using a single 3rd party dependency, `uuid`, for two reasons:
     * want to ensure truly unique, non-incrementing, id values
     * experience handling 3rd party dependency within the deployment
+* Using scan to search for tags vs query
+    * Unable to make an embedded object field an index, which is needed in order to do a query
+    * I guess a potential alternative would be to split the tables, and have an intermediary table that would map your item to individual tags
 
 ### Setup
 Before you can use `cdk`, there are a few things that you're expected to have already done:
@@ -35,3 +38,4 @@ Before you can use `cdk`, there are a few things that you're expected to have al
 ### Resources
 * [aws-samples github](https://github.com/aws-samples/aws-cdk-examples/tree/master/typescript/api-cors-lambda-crud-dynamodb)
     * This is a pretty good example of exactly what was asked for, but it took a lot of effort to get even a subportion of the demo working
+* [API Gateway event object](https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway.html)

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "tsc": "tsc",
-    "build": "tsc",
+    "build": "npm --prefix src run package && tsc",
     "deploy": "cdk deploy",
     "destroy": "cdk destroy",
     "watch": "tsc -w",

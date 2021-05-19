@@ -39,6 +39,16 @@ export class GatewayLambdaDynoStack extends cdk.Stack {
             }
         });
 
+        const getProductsByTagsLambda = new lambda.Function(this, 'getProductsByTags', {
+            code: new lambda.AssetCode('src'),
+            handler: 'get-products-by-tags.handler',
+            runtime: lambda.Runtime.NODEJS_10_X,
+            environment: {
+                TABLE_NAME: dynoTable.tableName,
+                PRIMARY_KEY: partitionKey
+            }
+        });
+
         const deleteProductLambda = new lambda.Function(this, 'deleteProduct', {
             code: new lambda.AssetCode('src'),
             handler: 'delete-product.handler',
@@ -51,6 +61,7 @@ export class GatewayLambdaDynoStack extends cdk.Stack {
 
         dynoTable.grantReadWriteData(addProductLambda);
         dynoTable.grantReadWriteData(getProductLambda);
+        dynoTable.grantReadWriteData(getProductsByTagsLambda);
         dynoTable.grantReadWriteData(deleteProductLambda);
 
         const gateway = new apigateway.RestApi(this, 'productsAPI', {
@@ -62,13 +73,18 @@ export class GatewayLambdaDynoStack extends cdk.Stack {
         productsAPI.addMethod('POST', addProductIntegration);
         addCorsOptions(productsAPI);
 
-        const specificProductAPI = productsAPI.addResource('{id}');
+        const specificProductAPI = productsAPI.addResource('{productId}');
         const getProductIntegration = new LambdaIntegration(getProductLambda);
         specificProductAPI.addMethod('GET', getProductIntegration)
 
         const deleteProductIntegration = new LambdaIntegration(deleteProductLambda);
         specificProductAPI.addMethod('DELETE', deleteProductIntegration);
         addCorsOptions(specificProductAPI);
+
+        const productSearchAPI = productsAPI.addResource('search');
+        const productSearchIntegration = new LambdaIntegration(getProductsByTagsLambda);
+        productSearchAPI.addMethod('GET', productSearchIntegration);
+        addCorsOptions(productSearchAPI);
 
     }
 
