@@ -26,7 +26,8 @@ export const handler = async (event: any = {}): Promise<any> => {
         await db.put(params).promise()
         return { statusCode: 201, body: JSON.stringify(product) }
     } catch (dbError) {
-        // No response message for public API, user should check logs
+        // log error, don't pass back to user
+        console.error(dbError);
         return { statusCode: 500 };
     }
 };

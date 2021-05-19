@@ -39,6 +39,8 @@ export const handler = async (event: any = {}): Promise<any> => {
             return { statusCode: 404}
         }
     } catch (dbError) {
-        return { statusCode: 500, body: JSON.stringify(dbError) };
+        // log error, don't pass back to user
+        console.error(dbError);
+        return { statusCode: 500 };
     }
 };

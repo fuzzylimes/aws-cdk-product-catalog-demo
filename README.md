@@ -1,3 +1,24 @@
+# Simple Product Catalog
+Project explores how one could go about creating a simple product catalog using AWS serverless technologies. The
+full stack includes:
+
+* CDK - handles component orchestration
+* API Gatway - makes our lambda functions accessible
+* Lambda - runs our bite-sized rest controllers and interfaces with DB
+* DynamoDB - stores our product data
+
+## How to Run
+1. Ensure you've completed the steps mentioned in the `SETUP` section below.
+2. Ensure you have cdk installed globally: `npm i -g aws-cdk`
+3. Run `npm install`
+4. Run `npm build` to compile ts and download lambda dependencies
+5. Run `cdk diff` to check what will be deployed
+6. Run `cdk deploy` and verify the changes to start deployment
+    * You can verify your deployment from the `CloudFormation` screen on aws console
+7. Begin using your APIs via the URL provided in your terminal output.
+
+> When done, run `cdk destroy` to remove all configured resources from your account.
+
 ## Notes
 * Using a single 3rd party dependency, `uuid`, for two reasons:
     * want to ensure truly unique, non-incrementing, id values
@@ -18,7 +39,7 @@ Before you can use `cdk`, there are a few things that you're expected to have al
     * AWSCloudFormationFullAccess
     * AWSLambda_FullAccess
 2. You MUST setup your local machine to use these `IAM` credentials, [per the documentation](https://docs.aws.amazon.com/cdk/latest/guide/cli.html#cli-environment).
-3. Not sure when this should be done, but before you try to deploy, you must run `cdk bootstrap` to setup your environment, [per the documentation](https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html)
+3. You must run `cdk bootstrap` to setup your environment, [per the documentation](https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html)
 
 ### Pitfalls
 1. Initial setup
@@ -33,9 +54,10 @@ Before you can use `cdk`, there are a few things that you're expected to have al
     * There's probably a better way to do this to maintain a cleaner codebase
 4. Thinking that Typescript was able to handle types at runtime
     * Coming from a statically typed world, I had assumed I would easily be able to tell the lambda functions that they would be receiving a body of type `xyz` and have it automatically serialized to that object type.
-    * What I found, and maybe I'm just reading a lot of old stuff and things have more recently changed, is that all of this work must be done by hand, or requires some 3rd party libraries
+    * What I found, and maybe I'm just reading a lot of old stuff and things have more recently changed, is that all of this work must be done by hand, or requires some 3rd party libraries.
 
 ### Resources
 * [aws-samples github](https://github.com/aws-samples/aws-cdk-examples/tree/master/typescript/api-cors-lambda-crud-dynamodb)
-    * This is a pretty good example of exactly what was asked for, but it took a lot of effort to get even a subportion of the demo working
-* [API Gateway event object](https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway.html)
+    * This is a pretty good example of the desired application, but it took a lot of effort to get even a portion of the demo working
+* [API Gateway event object](https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway.html) for handling event in lambda method
+* Source code (honestly found it more useful than AWS documentation 99% of the time)
