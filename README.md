@@ -19,15 +19,7 @@ full stack includes:
 
 > When done, run `cdk destroy` to remove all configured resources from your account.
 
-## Notes
-* Using a single 3rd party dependency, `uuid`, for two reasons:
-    * want to ensure truly unique, non-incrementing, id values
-    * experience handling 3rd party dependency within the deployment
-* Using scan to search for tags vs query
-    * Unable to make an embedded object field an index, which is needed in order to do a query
-    * I guess a potential alternative would be to split the tables, and have an intermediary table that would map your item to individual tags
-
-### Setup
+## Setup
 Before you can use `cdk`, there are a few things that you're expected to have already done:
 
 1. Setup an `IAM` account, with all needed permissions. The final permission list I ended up having to use was:
@@ -40,6 +32,19 @@ Before you can use `cdk`, there are a few things that you're expected to have al
     * AWSLambda_FullAccess
 2. You MUST setup your local machine to use these `IAM` credentials, [per the documentation](https://docs.aws.amazon.com/cdk/latest/guide/cli.html#cli-environment).
 3. You must run `cdk bootstrap` to setup your environment, [per the documentation](https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html)
+
+## Notes
+* Using a single 3rd party dependency, `uuid`, for two reasons:
+    * want to ensure truly unique, non-incrementing, id values
+    * experience handling 3rd party dependency within the deployment
+* Using scan to search for tags vs query
+    * Unable to make an embedded object field an index, which is needed in order to do a query
+    * I guess a potential alternative would be to split the tables, and have an intermediary table that would map your item to individual tags
+
+### Limitations
+There is a known limitation that allows for duplicate products to be created
+* In order to handle duplicates, product name would need to be normalized to a standard form that could be checked against
+* I spent a lot of time researching to see what the correct way to handle this in DynamoDB, and it appears that what's most commonly suggested is to create a GlobalSecondaryIndex for the normalized name. But at the same time, it appears that this wouldn't be needed, and could still be achieved using a scan (like we're doing with the tag values).
 
 ### Pitfalls
 1. Initial setup
