@@ -15,7 +15,7 @@ function validate(payload: productRequest): boolean {
     const check = typeof payload.name == "string" &&
             payload.name.length <= 40 &&
             typeof payload.price == "number" &&
-            payload.price > 0
+            payload.price >= 0
     if (Array.isArray(payload.tags)) {
         let isValid = true;
         for (let i = 0; i < payload.tags.length; i++) {
